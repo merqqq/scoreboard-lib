@@ -14,6 +14,9 @@ public class MatchServiceImpl implements MatchService {
 
     @Override
     public void startMatch(String homeTeam, String awayTeam) {
+        if(homeTeam.isBlank() || awayTeam.isBlank()) {
+            throw new IllegalArgumentException("Invalid arguments:\nhomeTeam and awayTeam are required");
+        }
         matches.add(new Match(homeTeam, awayTeam));
     }
 
