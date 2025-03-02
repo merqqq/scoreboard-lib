@@ -8,6 +8,7 @@ import java.util.Arrays;
 import java.util.List;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertThrows;
 
 class MatchServiceImplTest {
 
@@ -28,7 +29,7 @@ class MatchServiceImplTest {
     }
 
     @Test
-    void updateScore() {
+    void updateScore_shouldUpdateScoreWhenMatchIsInProgressAndArgumentsAreCorrect() {
         //given
         MatchService matchService = new MatchServiceImpl();
         matchService.startMatch("Mexico", "Canada");
@@ -45,6 +46,40 @@ class MatchServiceImplTest {
         assertEquals(1, matches.size());
         assertEquals(2, matches.get(0).getHomeScore());
         assertEquals(6, matches.get(0).getAwayScore());
+    }
+
+    @Test
+    void updateScore_shouldThrowInvalidArgumentException_negativeNumber() {
+        //given
+        MatchService matchService = new MatchServiceImpl();
+        matchService.startMatch("Mexico", "Canada");
+        List<Match> matches = matchService.getMatches();
+        assertEquals(1, matches.size());
+        assertEquals(0, matches.get(0).getHomeScore());
+        assertEquals(0, matches.get(0).getAwayScore());
+
+        //when
+
+
+        //then
+        assertThrows(IllegalArgumentException.class, () -> matchService.updateScore("Mexico", -1, "Canada", 6));
+    }
+
+    @Test
+    void updateScore_shouldThrowInvalidArgumentException_blankTeamName() {
+        //given
+        MatchService matchService = new MatchServiceImpl();
+        matchService.startMatch("Mexico", "Canada");
+        List<Match> matches = matchService.getMatches();
+        assertEquals(1, matches.size());
+        assertEquals(0, matches.get(0).getHomeScore());
+        assertEquals(0, matches.get(0).getAwayScore());
+
+        //when
+
+
+        //then
+        assertThrows(IllegalArgumentException.class, () -> matchService.updateScore("", 1, "Canada", 6));
     }
 
     @Test
