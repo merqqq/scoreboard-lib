@@ -10,11 +10,11 @@ import java.util.stream.Collectors;
 
 public class MatchServiceImpl implements MatchService {
 
-    public List<Match> matches = new ArrayList<>();
+    private final List<Match> matches = new ArrayList<>();
 
     @Override
     public void startMatch(String homeTeam, String awayTeam) {
-        if(homeTeam.isBlank() || awayTeam.isBlank()) {
+        if (homeTeam.isBlank() || awayTeam.isBlank()) {
             throw new IllegalArgumentException("Invalid arguments:\nhomeTeam and awayTeam are required");
         }
         matches.add(new Match(homeTeam, awayTeam));
@@ -22,7 +22,7 @@ public class MatchServiceImpl implements MatchService {
 
     @Override
     public void updateScore(String homeTeam, int homeScore, String awayTeam, int awayScore) {
-        if(homeTeam.isBlank() || homeScore<0 || awayTeam.isBlank() || awayScore<0) {
+        if (homeTeam.isBlank() || homeScore < 0 || awayTeam.isBlank() || awayScore < 0) {
             throw new IllegalArgumentException("Invalid arguments:\nHome Team: " + homeTeam + "\nHome Score: " + homeScore + "\nAway Team: " + awayTeam + "\nAway Score: " + awayScore);
         }
         matches.stream()
@@ -50,11 +50,6 @@ public class MatchServiceImpl implements MatchService {
     }
 
     @Override
-    public String getSummary(Match match) {
-        return match.getHomeTeam() + " " + match.getHomeScore() + " - " + match.getAwayTeam() + " " + match.getAwayScore();
-    }
-
-    @Override
     public List<String> getSummaries(List<Match> matches) {
         return matches.stream()
                 .sorted(
@@ -64,5 +59,9 @@ public class MatchServiceImpl implements MatchService {
                 .map(this::getSummary)
                 .collect(Collectors.toList())
                 .reversed();
+    }
+
+    private String getSummary(Match match) {
+        return match.getHomeTeam() + " " + match.getHomeScore() + " - " + match.getAwayTeam() + " " + match.getAwayScore();
     }
 }

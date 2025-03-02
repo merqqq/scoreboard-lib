@@ -14,7 +14,5 @@ public interface MatchService {
 
     int getTotalScore(Match match);
 
-    String getSummary(Match match);
-
     List<String> getSummaries(List<Match> matches);
 }

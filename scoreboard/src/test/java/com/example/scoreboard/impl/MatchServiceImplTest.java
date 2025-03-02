@@ -27,6 +27,7 @@ class MatchServiceImplTest {
         assertEquals(0, result.get(0).getHomeScore());
         assertEquals(0, result.get(0).getAwayScore());
     }
+
     @Test
     void startMatch_shouldThrowAnIllegalArgumentException_missingTeamName() {
         //given
@@ -132,19 +133,6 @@ class MatchServiceImplTest {
 
         //then
         assertEquals(8, result);
-    }
-
-    @Test
-    void getSummary() {
-        //given
-        Match match = new Match("Mexico", 3, "Canada", 5);
-        MatchService matchService = new MatchServiceImpl();
-
-        //when
-        String result = matchService.getSummary(match);
-
-        //then
-        assertEquals("Mexico 3 - Canada 5", result);
     }
 
     @Test
