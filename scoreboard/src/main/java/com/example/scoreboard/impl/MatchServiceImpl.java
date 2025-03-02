@@ -56,11 +56,6 @@ public class MatchServiceImpl implements MatchService {
     }
 
     @Override
-    public int getTotalScore(Match match) {
-        return match.getHomeScore() + match.getAwayScore();
-    }
-
-    @Override
     public List<String> getSummaries(List<Match> matches) {
         return matches.stream()
                 .sorted(
@@ -70,6 +65,10 @@ public class MatchServiceImpl implements MatchService {
                 .map(this::getSummary)
                 .collect(Collectors.toList())
                 .reversed();
+    }
+
+    private int getTotalScore(Match match) {
+        return match.getHomeScore() + match.getAwayScore();
     }
 
     private String getSummary(Match match) {

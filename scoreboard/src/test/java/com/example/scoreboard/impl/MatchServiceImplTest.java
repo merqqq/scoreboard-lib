@@ -123,19 +123,6 @@ class MatchServiceImplTest {
     }
 
     @Test
-    void getTotalScore() {
-        //given
-        Match match = new Match("Mexico", 3, "Canada", 5);
-        MatchService matchService = new MatchServiceImpl();
-
-        //when
-        int result = matchService.getTotalScore(match);
-
-        //then
-        assertEquals(8, result);
-    }
-
-    @Test
     void getSummaries() {
         //given
         Match match1 = new Match("Mexico", 3, "Canada", 5);
