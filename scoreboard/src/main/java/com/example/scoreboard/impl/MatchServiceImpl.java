@@ -6,9 +6,12 @@ import com.example.scoreboard.MatchService;
 import java.util.ArrayList;
 import java.util.Comparator;
 import java.util.List;
+import java.util.logging.Logger;
 import java.util.stream.Collectors;
 
 public class MatchServiceImpl implements MatchService {
+
+    private final Logger LOG = Logger.getLogger(MatchServiceImpl.class.getName());
 
     private final List<Match> matches = new ArrayList<>();
 
@@ -17,7 +20,10 @@ public class MatchServiceImpl implements MatchService {
         if (homeTeam.isBlank() || awayTeam.isBlank()) {
             throw new IllegalArgumentException("Invalid arguments:\nhomeTeam and awayTeam are required");
         }
+
         matches.add(new Match(homeTeam, awayTeam));
+
+        LOG.info("Match " + homeTeam + " vs " + awayTeam + " started");
     }
 
     @Override
@@ -25,6 +31,7 @@ public class MatchServiceImpl implements MatchService {
         if (homeTeam.isBlank() || homeScore < 0 || awayTeam.isBlank() || awayScore < 0) {
             throw new IllegalArgumentException("Invalid arguments:\nHome Team: " + homeTeam + "\nHome Score: " + homeScore + "\nAway Team: " + awayTeam + "\nAway Score: " + awayScore);
         }
+
         matches.stream()
                 .filter(match -> match.getHomeTeam().equals(homeTeam) && match.getAwayTeam().equals(awayTeam))
                 .findFirst()
@@ -32,11 +39,15 @@ public class MatchServiceImpl implements MatchService {
                     match.setHomeScore(homeScore);
                     match.setAwayScore(awayScore);
                 });
+
+        LOG.info("Match updated with scores: " + homeTeam + " " + homeScore + " - " + awayTeam + " " + awayScore);
     }
 
     @Override
     public void finishMatch(String homeTeam, String awayTeam) {
         matches.removeIf(match -> match.getHomeTeam().equals(homeTeam) && match.getAwayTeam().equals(awayTeam));
+
+        LOG.info("Match " + homeTeam + " vs " + awayTeam + " finished");
     }
 
     @Override
