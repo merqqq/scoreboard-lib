@@ -7,8 +7,7 @@ import org.junit.jupiter.api.Test;
 import java.util.Arrays;
 import java.util.List;
 
-import static org.junit.jupiter.api.Assertions.assertEquals;
-import static org.junit.jupiter.api.Assertions.assertThrows;
+import static org.junit.jupiter.api.Assertions.*;
 
 class MatchServiceImplTest {
 
@@ -38,6 +37,18 @@ class MatchServiceImplTest {
 
         //then
         assertThrows(IllegalArgumentException.class, () -> matchService.startMatch("Mexico", ""));
+    }
+
+    @Test
+    void startMatch_shouldThrowAnIllegalArgumentException_teamNamesAreTheSame() {
+        //given
+        MatchService matchService = new MatchServiceImpl();
+        assertEquals(0, matchService.getMatches().size());
+
+        //when
+
+        //then
+        assertThrows(IllegalArgumentException.class, () -> matchService.startMatch("Mexico", "Mexico"));
     }
 
     @Test
@@ -95,6 +106,29 @@ class MatchServiceImplTest {
     }
 
     @Test
+    void updateScore_shouldThrowInvalidArgumentException_teamNamesAreTheSame() {
+        //given
+        MatchService matchService = new MatchServiceImpl();
+
+        //when
+
+        //then
+        assertThrows(IllegalArgumentException.class, () -> matchService.updateScore("Canada", 1, "Canada", 6));
+    }
+
+    @Test
+    void updateScore_shouldNotUpdateScoreWhenMatchDoesNotExist() {
+        //given
+        MatchService matchService = new MatchServiceImpl();
+
+        //when
+        matchService.updateScore("Mexico", 1, "Germany", 2);
+
+        //then
+        assertTrue(matchService.getMatches().isEmpty(), "Matches list should remain empty");
+    }
+
+    @Test
     void finishMatch_shouldRemoveMatchFromTheList() {
         //given
         MatchService matchService = new MatchServiceImpl();
@@ -109,17 +143,42 @@ class MatchServiceImplTest {
     }
 
     @Test
+    void finishMatch_shouldThrowAnIllegalArgumentException_missingTeamName() {
+        //given
+        MatchService matchService = new MatchServiceImpl();
+
+        //when
+
+        //then
+        assertThrows(IllegalArgumentException.class, () -> matchService.finishMatch("Mexico", ""));
+    }
+
+    @Test
+    void finishMatch_shouldThrowAnIllegalArgumentException_teamNamesAreTheSame() {
+        //given
+        MatchService matchService = new MatchServiceImpl();
+
+        //when
+
+        //then
+        assertThrows(IllegalArgumentException.class, () -> matchService.finishMatch("Mexico", "Mexico"));
+    }
+
+    @Test
     void finishMatch_shouldNotRemoveMatchFromTheListWhenMatchDoesNotExist() {
         //given
         MatchService matchService = new MatchServiceImpl();
         matchService.startMatch("Mexico", "Canada");
-        assertEquals(1, matchService.getMatches().size());
+        List<Match> matchesBefore = matchService.getMatches();
+        assertEquals(1, matchesBefore.size());
 
         //when
         matchService.finishMatch("Mexico", "Germany");
 
         //then
-        assertEquals(1, matchService.getMatches().size());
+        List<Match> matchesAfter = matchService.getMatches();
+        assertEquals(1, matchesAfter.size());
+        assertEquals(matchesBefore, matchesAfter);
     }
 
     @Test

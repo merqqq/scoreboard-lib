@@ -6,6 +6,7 @@ import com.example.scoreboard.MatchService;
 import java.util.ArrayList;
 import java.util.Comparator;
 import java.util.List;
+import java.util.Optional;
 import java.util.logging.Logger;
 import java.util.stream.Collectors;
 
@@ -20,6 +21,9 @@ public class MatchServiceImpl implements MatchService {
         if (homeTeam.isBlank() || awayTeam.isBlank()) {
             throw new IllegalArgumentException("Invalid arguments:\nhomeTeam and awayTeam are required");
         }
+        if (homeTeam.equals(awayTeam)) {
+            throw new IllegalArgumentException("Invalid arguments:\nhomeTeam and awayTeam cannot be the same");
+        }
 
         matches.add(new Match(homeTeam, awayTeam));
 
@@ -31,23 +35,37 @@ public class MatchServiceImpl implements MatchService {
         if (homeTeam.isBlank() || homeScore < 0 || awayTeam.isBlank() || awayScore < 0) {
             throw new IllegalArgumentException("Invalid arguments:\nHome Team: " + homeTeam + "\nHome Score: " + homeScore + "\nAway Team: " + awayTeam + "\nAway Score: " + awayScore);
         }
+        if (homeTeam.equals(awayTeam)) {
+            throw new IllegalArgumentException("Invalid arguments:\nhomeTeam and awayTeam cannot be the same");
+        }
 
-        matches.stream()
-                .filter(match -> match.getHomeTeam().equals(homeTeam) && match.getAwayTeam().equals(awayTeam))
-                .findFirst()
-                .ifPresent(match -> {
+        findMatch(homeTeam, awayTeam).ifPresentOrElse(
+                match -> {
                     match.setHomeScore(homeScore);
                     match.setAwayScore(awayScore);
-                });
-
-        LOG.info("Match updated with scores: " + homeTeam + " " + homeScore + " - " + awayTeam + " " + awayScore);
+                    LOG.info("Match updated with scores: " + homeTeam + " " + homeScore + " - " + awayTeam + " " + awayScore);
+                },
+                () -> LOG.info("There is no ongoing match between " + homeTeam + " and " + awayTeam)
+        );
     }
 
     @Override
     public void finishMatch(String homeTeam, String awayTeam) {
-        matches.removeIf(match -> match.getHomeTeam().equals(homeTeam) && match.getAwayTeam().equals(awayTeam));
+        if (homeTeam.isBlank() || awayTeam.isBlank()) {
+            throw new IllegalArgumentException("Invalid arguments:\nhomeTeam and awayTeam are required");
+        }
+        if (homeTeam.equals(awayTeam)) {
+            throw new IllegalArgumentException("Invalid arguments:\nhomeTeam and awayTeam cannot be the same");
+        }
 
-        LOG.info("Match " + homeTeam + " vs " + awayTeam + " finished");
+        findMatch(homeTeam, awayTeam).ifPresentOrElse(
+                match -> {
+                    LOG.info("Removing match " + match.getHomeTeam() + " vs " + match.getAwayTeam());
+                    matches.remove(match);
+                    LOG.info("Match " + homeTeam + " vs " + awayTeam + " finished");
+                },
+                () -> LOG.info("No ongoing match found between " + homeTeam + " and " + awayTeam)
+        );
     }
 
     @Override
@@ -65,6 +83,12 @@ public class MatchServiceImpl implements MatchService {
                 .map(this::getSummary)
                 .collect(Collectors.toList())
                 .reversed();
+    }
+
+    private Optional<Match> findMatch(String homeTeam, String awayTeam) {
+        return matches.stream()
+                .filter(match -> match.getHomeTeam().equals(homeTeam) && match.getAwayTeam().equals(awayTeam))
+                .findFirst();
     }
 
     private int getTotalScore(Match match) {
