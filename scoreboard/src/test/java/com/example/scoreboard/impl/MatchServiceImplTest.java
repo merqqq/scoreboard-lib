@@ -24,9 +24,10 @@ class MatchServiceImplTest {
         //then
         List<Match> result = matchService.getMatches();
         assertEquals(1, result.size());
-        assertEquals(0, result.get(0).getHomeScore());
-        assertEquals(0, result.get(0).getAwayScore());
+        assertEquals(0, result.getFirst().getHomeScore());
+        assertEquals(0, result.getFirst().getAwayScore());
     }
+
     @Test
     void startMatch_shouldThrowAnIllegalArgumentException_missingTeamName() {
         //given
@@ -46,8 +47,8 @@ class MatchServiceImplTest {
         matchService.startMatch("Mexico", "Canada");
         List<Match> matches = matchService.getMatches();
         assertEquals(1, matches.size());
-        assertEquals(0, matches.get(0).getHomeScore());
-        assertEquals(0, matches.get(0).getAwayScore());
+        assertEquals(0, matches.getFirst().getHomeScore());
+        assertEquals(0, matches.getFirst().getAwayScore());
 
         //when
         matchService.updateScore("Mexico", 2, "Canada", 6);
@@ -55,8 +56,8 @@ class MatchServiceImplTest {
         //then
         matches = matchService.getMatches();
         assertEquals(1, matches.size());
-        assertEquals(2, matches.get(0).getHomeScore());
-        assertEquals(6, matches.get(0).getAwayScore());
+        assertEquals(2, matches.getFirst().getHomeScore());
+        assertEquals(6, matches.getFirst().getAwayScore());
     }
 
     @Test
@@ -66,8 +67,8 @@ class MatchServiceImplTest {
         matchService.startMatch("Mexico", "Canada");
         List<Match> matches = matchService.getMatches();
         assertEquals(1, matches.size());
-        assertEquals(0, matches.get(0).getHomeScore());
-        assertEquals(0, matches.get(0).getAwayScore());
+        assertEquals(0, matches.getFirst().getHomeScore());
+        assertEquals(0, matches.getFirst().getAwayScore());
 
         //when
 
@@ -83,8 +84,8 @@ class MatchServiceImplTest {
         matchService.startMatch("Mexico", "Canada");
         List<Match> matches = matchService.getMatches();
         assertEquals(1, matches.size());
-        assertEquals(0, matches.get(0).getHomeScore());
-        assertEquals(0, matches.get(0).getAwayScore());
+        assertEquals(0, matches.getFirst().getHomeScore());
+        assertEquals(0, matches.getFirst().getAwayScore());
 
         //when
 
@@ -119,32 +120,6 @@ class MatchServiceImplTest {
 
         //then
         assertEquals(1, matchService.getMatches().size());
-    }
-
-    @Test
-    void getTotalScore() {
-        //given
-        Match match = new Match("Mexico", 3, "Canada", 5);
-        MatchService matchService = new MatchServiceImpl();
-
-        //when
-        int result = matchService.getTotalScore(match);
-
-        //then
-        assertEquals(8, result);
-    }
-
-    @Test
-    void getSummary() {
-        //given
-        Match match = new Match("Mexico", 3, "Canada", 5);
-        MatchService matchService = new MatchServiceImpl();
-
-        //when
-        String result = matchService.getSummary(match);
-
-        //then
-        assertEquals("Mexico 3 - Canada 5", result);
     }
 
     @Test
