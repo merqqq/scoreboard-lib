@@ -14,11 +14,17 @@ public class MatchServiceImpl implements MatchService {
 
     @Override
     public void startMatch(String homeTeam, String awayTeam) {
+        if(homeTeam.isBlank() || awayTeam.isBlank()) {
+            throw new IllegalArgumentException("Invalid arguments:\nhomeTeam and awayTeam are required");
+        }
         matches.add(new Match(homeTeam, awayTeam));
     }
 
     @Override
     public void updateScore(String homeTeam, int homeScore, String awayTeam, int awayScore) {
+        if(homeTeam.isBlank() || homeScore<0 || awayTeam.isBlank() || awayScore<0) {
+            throw new IllegalArgumentException("Invalid arguments:\nHome Team: " + homeTeam + "\nHome Score: " + homeScore + "\nAway Team: " + awayTeam + "\nAway Score: " + awayScore);
+        }
         matches.stream()
                 .filter(match -> match.getHomeTeam().equals(homeTeam) && match.getAwayTeam().equals(awayTeam))
                 .findFirst()

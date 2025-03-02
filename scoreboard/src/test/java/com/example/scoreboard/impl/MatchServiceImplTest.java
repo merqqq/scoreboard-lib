@@ -8,11 +8,12 @@ import java.util.Arrays;
 import java.util.List;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertThrows;
 
 class MatchServiceImplTest {
 
     @Test
-    void startMatch() {
+    void startMatch_shouldAddNewMatchToTheList() {
         //given
         MatchService matchService = new MatchServiceImpl();
         assertEquals(0, matchService.getMatches().size());
@@ -26,9 +27,20 @@ class MatchServiceImplTest {
         assertEquals(0, result.get(0).getHomeScore());
         assertEquals(0, result.get(0).getAwayScore());
     }
+    @Test
+    void startMatch_shouldThrowAnIllegalArgumentException_missingTeamName() {
+        //given
+        MatchService matchService = new MatchServiceImpl();
+        assertEquals(0, matchService.getMatches().size());
+
+        //when
+
+        //then
+        assertThrows(IllegalArgumentException.class, () -> matchService.startMatch("Mexico", ""));
+    }
 
     @Test
-    void updateScore() {
+    void updateScore_shouldUpdateScoreWhenMatchIsInProgressAndArgumentsAreCorrect() {
         //given
         MatchService matchService = new MatchServiceImpl();
         matchService.startMatch("Mexico", "Canada");
@@ -48,18 +60,65 @@ class MatchServiceImplTest {
     }
 
     @Test
-    void finishMatch() {
+    void updateScore_shouldThrowInvalidArgumentException_negativeNumber() {
         //given
         MatchService matchService = new MatchServiceImpl();
         matchService.startMatch("Mexico", "Canada");
         List<Match> matches = matchService.getMatches();
         assertEquals(1, matches.size());
+        assertEquals(0, matches.get(0).getHomeScore());
+        assertEquals(0, matches.get(0).getAwayScore());
+
+        //when
+
+
+        //then
+        assertThrows(IllegalArgumentException.class, () -> matchService.updateScore("Mexico", -1, "Canada", 6));
+    }
+
+    @Test
+    void updateScore_shouldThrowInvalidArgumentException_blankTeamName() {
+        //given
+        MatchService matchService = new MatchServiceImpl();
+        matchService.startMatch("Mexico", "Canada");
+        List<Match> matches = matchService.getMatches();
+        assertEquals(1, matches.size());
+        assertEquals(0, matches.get(0).getHomeScore());
+        assertEquals(0, matches.get(0).getAwayScore());
+
+        //when
+
+
+        //then
+        assertThrows(IllegalArgumentException.class, () -> matchService.updateScore("", 1, "Canada", 6));
+    }
+
+    @Test
+    void finishMatch_shouldRemoveMatchFromTheList() {
+        //given
+        MatchService matchService = new MatchServiceImpl();
+        matchService.startMatch("Mexico", "Canada");
+        assertEquals(1, matchService.getMatches().size());
 
         //when
         matchService.finishMatch("Mexico", "Canada");
 
         //then
         assertEquals(0, matchService.getMatches().size());
+    }
+
+    @Test
+    void finishMatch_shouldNotRemoveMatchFromTheListWhenMatchDoesNotExist() {
+        //given
+        MatchService matchService = new MatchServiceImpl();
+        matchService.startMatch("Mexico", "Canada");
+        assertEquals(1, matchService.getMatches().size());
+
+        //when
+        matchService.finishMatch("Mexico", "Germany");
+
+        //then
+        assertEquals(1, matchService.getMatches().size());
     }
 
     @Test
