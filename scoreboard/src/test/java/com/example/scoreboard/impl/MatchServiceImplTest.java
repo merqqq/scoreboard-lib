@@ -13,7 +13,7 @@ import static org.junit.jupiter.api.Assertions.assertThrows;
 class MatchServiceImplTest {
 
     @Test
-    void startMatch() {
+    void startMatch_shouldAddNewMatchToTheList() {
         //given
         MatchService matchService = new MatchServiceImpl();
         assertEquals(0, matchService.getMatches().size());
@@ -26,6 +26,17 @@ class MatchServiceImplTest {
         assertEquals(1, result.size());
         assertEquals(0, result.get(0).getHomeScore());
         assertEquals(0, result.get(0).getAwayScore());
+    }
+    @Test
+    void startMatch_shouldThrowAnIllegalArgumentException_missingTeamName() {
+        //given
+        MatchService matchService = new MatchServiceImpl();
+        assertEquals(0, matchService.getMatches().size());
+
+        //when
+
+        //then
+        assertThrows(IllegalArgumentException.class, () -> matchService.startMatch("Mexico", ""));
     }
 
     @Test
@@ -83,18 +94,31 @@ class MatchServiceImplTest {
     }
 
     @Test
-    void finishMatch() {
+    void finishMatch_shouldRemoveMatchFromTheList() {
         //given
         MatchService matchService = new MatchServiceImpl();
         matchService.startMatch("Mexico", "Canada");
-        List<Match> matches = matchService.getMatches();
-        assertEquals(1, matches.size());
+        assertEquals(1, matchService.getMatches().size());
 
         //when
         matchService.finishMatch("Mexico", "Canada");
 
         //then
         assertEquals(0, matchService.getMatches().size());
+    }
+
+    @Test
+    void finishMatch_shouldNotRemoveMatchFromTheListWhenMatchDoesNotExist() {
+        //given
+        MatchService matchService = new MatchServiceImpl();
+        matchService.startMatch("Mexico", "Canada");
+        assertEquals(1, matchService.getMatches().size());
+
+        //when
+        matchService.finishMatch("Mexico", "Germany");
+
+        //then
+        assertEquals(1, matchService.getMatches().size());
     }
 
     @Test
